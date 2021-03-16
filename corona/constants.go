@@ -1,6 +1,7 @@
 package corona
 
 const (
+	RestCountriesRootPath   string = "https://restcountries.eu/rest/v2"
 	MMediaGroupAPIRootPath  string = "https://covid-api.mmediagroup.fr/v1"
 	CovidTrackerAPIRootPath string = "https://covidtrackerapi.bsg.ox.ac.uk/api/v2"
 
