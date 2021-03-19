@@ -21,9 +21,7 @@ func TestDiagEndpoint(t *testing.T) {
 	handler := NewDiagHandler(0, time.Now())
 	handler.ServeHTTP(rr, req)
 
-	if rr.Code != http.StatusOK {
-		t.Errorf("Handler returned incorrect status code. Wanted: %d, got: %d", http.StatusOK, rr.Code)
-	}
+	assert.Equal(t, rr.Code, http.StatusOK, "Status code should be 200 status ok")
 
 	var body diag
 	err = json.NewDecoder(rr.Body).Decode(&body)
