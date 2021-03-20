@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 )
@@ -22,6 +23,37 @@ func (e *ServerError) Error() string {
 // TimeAsString converts a timepoint to a string width format yyyy-mm-dd.
 func TimeAsString(t time.Time) string {
 	return fmt.Sprintf("%.4d-%.2d-%.2d", t.Year(), t.Month(), t.Day())
+}
+
+// LatestDateInDateFloatMap returns the latest date in a map where key = date (as strings with format "yyyy-mm-dd").
+// The naming reflects the stupidity of go's type system not being able to express this function generically.
+func LatestDateInDateFloatMap(m *map[string]float64) string {
+	// Get the keys in the map
+	keys := make([]string, 0, len(*m))
+	for k := range *m {
+		keys = append(keys, k)
+	}
+	// Sort them alphabetically
+	sort.Strings(keys)
+	// Pick the last one
+	latest := keys[len(keys)-1]
+	return latest
+}
+
+// LatestDateInDateMapStringDataMap returns the latest date in a map where key = date (as strings with format "yyyy-mm-dd").
+// The naming reflects the stupidity of go's type system not being able to express this function generically.
+// YES THIS IS THE SAME FUNCTION TWICE. FUCK GO THAT'S WHY.
+func LatestDateInDateMapStringDataMap(m *map[string]map[string]covidTrackerAPICountryData) string {
+	// Get the keys in the map
+	keys := make([]string, 0, len(*m))
+	for k := range *m {
+		keys = append(keys, k)
+	}
+	// Sort them alphabetically
+	sort.Strings(keys)
+	// Pick the last one
+	latest := keys[len(keys)-1]
+	return latest
 }
 
 // ParseScope query into two dates, or an error.
