@@ -27,10 +27,10 @@ func TimeAsString(t time.Time) string {
 
 // LatestDateInDateFloatMap returns the latest date in a map where key = date (as strings with format "yyyy-mm-dd").
 // The naming reflects the stupidity of go's type system not being able to express this function generically.
-func LatestDateInDateFloatMap(m *map[string]float64) string {
+func LatestDateInDateFloatMap(m map[string]float64) string {
 	// Get the keys in the map
-	keys := make([]string, 0, len(*m))
-	for k := range *m {
+	keys := make([]string, 0, len(m))
+	for k := range m {
 		keys = append(keys, k)
 	}
 	// Sort them alphabetically
@@ -43,10 +43,10 @@ func LatestDateInDateFloatMap(m *map[string]float64) string {
 // LatestDateInDateMapStringDataMap returns the latest date in a map where key = date (as strings with format "yyyy-mm-dd").
 // The naming reflects the stupidity of go's type system not being able to express this function generically.
 // YES THIS IS THE SAME FUNCTION TWICE. FUCK GO THAT'S WHY.
-func LatestDateInDateMapStringDataMap(m *map[string]map[string]covidTrackerAPICountryData) string {
+func LatestDateInDateMapStringDataMap(m map[string]map[string]covidTrackerAPICountryData) string {
 	// Get the keys in the map
-	keys := make([]string, 0, len(*m))
-	for k := range *m {
+	keys := make([]string, 0, len(m))
+	for k := range m {
 		keys = append(keys, k)
 	}
 	// Sort them alphabetically

@@ -39,7 +39,7 @@ func (cases *caseHistory) countInScope(upper, lower time.Time) float64 {
 
 // latestCount gets the latest count of cases.
 func (cases *caseHistory) latestCount() float64 {
-	key := LatestDateInDateFloatMap(&cases.Dates)
+	key := LatestDateInDateFloatMap(cases.Dates)
 	return cases.Dates[key]
 }
 
