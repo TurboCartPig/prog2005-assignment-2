@@ -30,14 +30,21 @@ type caseHistory struct {
 }
 
 // Count all the cases within a scope in time.
-func (cases *caseHistory) CountInScope(upper, lower time.Time) float64 {
+func (cases *caseHistory) countInScope(upper, lower time.Time) float64 {
 	start := TimeAsString(upper)
 	end := TimeAsString(lower)
 
 	return cases.Dates[end] - cases.Dates[start]
 }
 
-func GetCases(country string) (confirmed, recovered caseHistory, err *ServerError) {
+// latestCount gets the latest count of cases.
+func (cases *caseHistory) latestCount() float64 {
+	// Gamble that the latest report is from two days ago
+	key := TimeAsString(time.Now().AddDate(0, 0, -2))
+	return cases.Dates[key]
+}
+
+func getCases(country string) (confirmed, recovered caseHistory, err *ServerError) {
 	root := MMediaGroupAPIRootPath + "/history?country=" + country
 
 	cases := make(map[string]caseHistory)
@@ -77,22 +84,40 @@ func GetCases(country string) (confirmed, recovered caseHistory, err *ServerErro
 // TODO: Handle no scope query
 func CountryHandler(rw http.ResponseWriter, r *http.Request) {
 	var response countryResponse
+	var scoped bool
 
 	country := chi.URLParam(r, "country")
 	// Parse the scope query into two dates
 	upper, lower, err := ParseScope(r.URL)
 	if err != nil {
-		log.Printf("Invalid request recived: %s", err.Error())
+		log.Printf("Invalid request received: %s", err.Error())
 		http.Error(rw, "Bad request: check the scope query.", http.StatusBadRequest)
 	}
+	if upper == nil {
+		scoped = false
+	} else {
+		scoped = true
+	}
 
-	confirmed, recovered, err := GetCases(country)
+	confirmed, recovered, serverErr := getCases(country)
+	if serverErr != nil {
+		http.Error(rw, serverErr.Error(), serverErr.StatusCode)
+	}
+
 	response.Country = confirmed.Country
 	response.Continent = confirmed.Continent
-	response.Scope = TimeAsString(upper) + "-" + TimeAsString(lower)
-	response.Confirmed = confirmed.CountInScope(upper, lower)
-	response.Recovered = recovered.CountInScope(upper, lower)
-	response.PopulationPercentage = math.Round(float64(response.Confirmed)/float64(confirmed.Population)*100) / 100
+
+	if scoped {
+		response.Scope = TimeAsString(*upper) + "-" + TimeAsString(*lower)
+		response.Confirmed = confirmed.countInScope(*upper, *lower)
+		response.Recovered = recovered.countInScope(*upper, *lower)
+	} else {
+		response.Scope = "total"
+		response.Confirmed = confirmed.latestCount()
+		response.Recovered = recovered.latestCount()
+	}
+
+	response.PopulationPercentage = math.Round(response.Confirmed/confirmed.Population*100) / 100
 
 	err = json.NewEncoder(rw).Encode(response)
 	if err != nil {

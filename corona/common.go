@@ -25,27 +25,29 @@ func TimeAsString(t time.Time) string {
 }
 
 // ParseScope query into two dates, or an error.
-func ParseScope(qs *url.URL) (upper, lower time.Time, err error) {
+func ParseScope(qs *url.URL) (*time.Time, *time.Time, error) {
 	scope := qs.Query().Get("scope")
 
-	// If the query was not given, return some sensible default
+	// If the query was not given, return nil, but no error
 	if scope == "" {
-		upper = time.Unix(0, 0)
-		lower = time.Now()
-		return
+		return nil, nil, nil
 	}
 
 	parts := strings.Split(scope, "-")
 
 	// Check if all the parts are present
 	if len(parts) != 6 {
-		err = errors.New("Incorrect date format in scope query")
-		return
+		err := errors.New("incorrect date format in scope query")
+		return nil, nil, err
 	}
 
 	// Parse into timepoints
-	upper, err = time.Parse(time.RFC3339, fmt.Sprintf("%s-%s-%sT00:00:00Z", parts[0], parts[1], parts[2]))
-	lower, err = time.Parse(time.RFC3339, fmt.Sprintf("%s-%s-%sT00:00:00Z", parts[3], parts[4], parts[5]))
+	upper, err := time.Parse(time.RFC3339, fmt.Sprintf("%s-%s-%sT00:00:00Z", parts[0], parts[1], parts[2]))
+	if err != nil {
+		return nil, nil, err
+	}
 
-	return
+	lower, err := time.Parse(time.RFC3339, fmt.Sprintf("%s-%s-%sT00:00:00Z", parts[3], parts[4], parts[5]))
+
+	return &upper, &lower, err
 }
