@@ -1,0 +1,14 @@
+[Unit]
+Description=Assignment 2 from prog2005 at NTNU
+Documentation=https://git.gvk.idi.ntnu.no/course/prog2005/prog2005-2021-workspace/denniskr/assignment-2/-/blob/main/readme.md
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/assignment-2
+Environment=PORT=443 GOOGLE_APPLICATION_CREDENTIALS=???
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=multi-user.target
