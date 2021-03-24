@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/jetbrains+all,go,vim
 # Edit at https://www.toptal.com/developers/gitignore?templates=jetbrains+all,go,vim
 
+### Firebase ###
+service-account-key.json
+
 ### Go ###
 # Binaries for programs and plugins
 *.exe
