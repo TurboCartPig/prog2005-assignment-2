@@ -88,7 +88,7 @@ func GetStatusOf(addr string) int {
 
 // StatusIs200 checks if a http status code is a 2XX status.
 func StatusIs2XX(status int) bool {
-	if status <= 200 && status > 300 {
+	if status >= 200 && status < 300 {
 		return true
 	}
 	return false
