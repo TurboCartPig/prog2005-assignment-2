@@ -52,11 +52,13 @@ func getCases(country string) (confirmed, recovered caseHistory, err *ServerErro
 	res, geterr := http.Get(root + "&status=Confirmed")
 	if geterr != nil {
 		err = &ServerError{"Failed to get cases for country", res.StatusCode}
+		return
 	}
 
 	decerr := json.NewDecoder(res.Body).Decode(&cases)
 	if decerr != nil {
 		err = &ServerError{"Failed to decode response from remote", http.StatusInternalServerError}
+		return
 	}
 	res.Body.Close()
 
@@ -66,11 +68,13 @@ func getCases(country string) (confirmed, recovered caseHistory, err *ServerErro
 	res, geterr = http.Get(root + "&status=Recovered")
 	if geterr != nil {
 		err = &ServerError{"Failed to get cases for country", res.StatusCode}
+		return
 	}
 
 	decerr = json.NewDecoder(res.Body).Decode(&cases)
 	if decerr != nil {
 		err = &ServerError{"Failed to decode response from remote", http.StatusInternalServerError}
+		return
 	}
 	res.Body.Close()
 
@@ -91,6 +95,7 @@ func CountryHandler(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Invalid request received: %s", err.Error())
 		http.Error(rw, "Bad request: check the scope query.", http.StatusBadRequest)
+		return
 	}
 	if upper == nil {
 		scoped = false
@@ -122,5 +127,6 @@ func CountryHandler(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Something went wrong: %s", err.Error())
 		http.Error(rw, "Something went wrong", http.StatusInternalServerError)
+		return
 	}
 }
