@@ -1,10 +1,9 @@
 package notifications
 
 import (
+	"assignment-2/corona"
 	"encoding/json"
-	"log"
 	"net/http"
-	"strings"
 )
 
 // requestBody is the body of the incoming request to be parsed and registered.
@@ -39,22 +38,9 @@ func NewCreateHandler() http.HandlerFunc {
 		// Send an OPTIONS request to the supplied url in order to check:
 		// 1. That the url exits.
 		// 2. That the url accepts POST requests.
-		req, err := http.NewRequest(http.MethodOptions, body.URL, nil)
-		if err != nil {
-			log.Println(err.Error())
-			http.Error(rw, "Something is wrong with the url field", http.StatusBadRequest)
-			return
-		}
-
-		res, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Println(err.Error())
-			http.Error(rw, "Something is wrong with the url field", http.StatusBadRequest)
-			return
-		}
-		defer res.Body.Close()
-		if strings.Contains(res.Header.Get("Allow"), http.MethodPost) {
-			http.Error(rw, "The supplied url exits, but does not support eater POST requests or OPTIONS requests", http.StatusBadRequest)
+		status := corona.GetStatusOf(body.URL)
+		if !corona.StatusIs2XX(status) {
+			http.Error(rw, "There is something wrong with the url field", http.StatusBadRequest)
 			return
 		}
 

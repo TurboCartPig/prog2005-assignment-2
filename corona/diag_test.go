@@ -30,7 +30,7 @@ func TestDiagEndpoint(t *testing.T) {
 	}
 
 	// NOTE: CovidTrackerAPI returns "204 no content" for options requests for some reason.
-	assert.Equal(t, body.CovidTrackerAPI, http.StatusNoContent, "Status code should be 204 status no content")
-	assert.Equal(t, body.MMediaGroupAPI, http.StatusOK, "Status code should be 200 status ok")
-	assert.Equal(t, body.RestCountriesAPI, http.StatusOK, "Status code should be 200 status ok")
+	assert.True(t, StatusIs2XX(body.CovidTrackerAPI), "Status code is not 2XX")
+	assert.True(t, StatusIs2XX(body.MMediaGroupAPI), "Status code is not 2XX")
+	assert.True(t, StatusIs2XX(body.RestCountriesAPI), "Status code is not 2XX")
 }

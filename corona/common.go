@@ -3,6 +3,8 @@ package corona
 import (
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
 	"net/url"
 	"sort"
 	"strings"
@@ -66,4 +68,28 @@ func ParseScope(qs *url.URL) (*time.Time, *time.Time, error) {
 	lower, err := time.Parse(time.RFC3339, fmt.Sprintf("%s-%s-%sT00:00:00Z", parts[3], parts[4], parts[5]))
 
 	return &upper, &lower, err
+}
+
+// GetStatusOf returns the status code of a head request to the root path of a remote.
+func GetStatusOf(addr string) int {
+	req, err := http.NewRequest(http.MethodOptions, addr, nil)
+	if err != nil {
+		log.Printf("Options request failed with: %s", err.Error())
+		return http.StatusBadRequest // Assume I did something wrong, all other errors should be "successful"
+	}
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("Options request failed with: %s", err.Error())
+		return http.StatusBadRequest // Assume I did something wrong, all other errors should be "successful"
+	}
+	res.Body.Close()
+	return res.StatusCode
+}
+
+// StatusIs200 checks if a http status code is a 2XX status.
+func StatusIs2XX(status int) bool {
+	if status <= 200 && status > 300 {
+		return true
+	}
+	return false
 }
