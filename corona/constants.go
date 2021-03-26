@@ -19,7 +19,4 @@ const (
 
 	// DiagRootPath for the diag endpoint
 	DiagRootPath string = RootPath + "/diag"
-
-	// NotificationsRootPath for the notifications endpoint
-	NotificationsRootPath string = RootPath + "/notifications"
 )

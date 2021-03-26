@@ -9,6 +9,7 @@ import (
 
 	"assignment-2/corona"
 	mymw "assignment-2/middleware"
+	"assignment-2/notifications"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -52,6 +53,14 @@ func setupRoutes() *chi.Mux {
 	r.Get(corona.DiagRootPath, corona.NewDiagHandler(0, StartTime))
 	r.Get(corona.CountryRootPath+"/{country:[a-zA-Z]+}", corona.CountryHandler)
 	r.Get(corona.PolicyRootPath+"/{country:[a-zA-Z]+}", corona.PolicyHandler)
+
+	// Define webhook endpoints in a subroute
+	r.Route(notifications.RootPath, func(r chi.Router) {
+		r.Post("/", notifications.NewCreateHandler())
+		r.Get("/", notifications.NewReadAllHandler())
+		r.Delete(notifications.IdPattern, notifications.NewDeleteHandler())
+		r.Get(notifications.IdPattern, notifications.NewReadHandler())
+	})
 
 	return r
 }
