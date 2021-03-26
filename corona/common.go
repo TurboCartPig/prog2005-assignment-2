@@ -40,22 +40,6 @@ func LatestDateInDateFloatMap(m map[string]float64) string {
 	return latest
 }
 
-// LatestDateInDateMapStringDataMap returns the latest date in a map where key = date (as strings with format "yyyy-mm-dd").
-// The naming reflects the stupidity of go's type system not being able to express this function generically.
-// YES THIS IS THE SAME FUNCTION TWICE. FUCK GO THAT'S WHY.
-func LatestDateInDateMapStringDataMap(m map[string]map[string]covidTrackerAPICountryData) string {
-	// Get the keys in the map
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	// Sort them alphabetically
-	sort.Strings(keys)
-	// Pick the last one
-	latest := keys[len(keys)-1]
-	return latest
-}
-
 // ParseScope query into two dates, or an error.
 func ParseScope(qs *url.URL) (*time.Time, *time.Time, error) {
 	scope := qs.Query().Get("scope")
