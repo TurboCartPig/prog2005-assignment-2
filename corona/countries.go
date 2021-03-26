@@ -13,9 +13,9 @@ type country struct {
 
 // GetCountryCode gets the alpha 3 code of a given country.
 func GetCountryCode(name string) (string, *ServerError) {
-	var country country
+	var country [1]country
 
-	res, err := http.Get(RestCountriesRootPath + "/name/" + name + "?fullText=true&fields=name,alpha3Code")
+	res, err := http.Get(RestCountriesRootPath + "/name/" + name + "?fullText=true&fields=name;alpha3Code")
 	if err != nil {
 		return "", &ServerError{"Get country failed with: " + err.Error(), res.StatusCode}
 	}
@@ -26,5 +26,5 @@ func GetCountryCode(name string) (string, *ServerError) {
 	}
 	res.Body.Close()
 
-	return country.Alpha3Code, nil
+	return country[0].Alpha3Code, nil
 }
