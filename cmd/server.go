@@ -3,6 +3,7 @@ package main
 import (
 	"cloud.google.com/go/firestore"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -17,13 +18,13 @@ import (
 )
 
 // Globals
-/////////////////////////////////////////////////////////////////////////////////////////////
+// -------------------------------------------------------------------------------------------
 
-// The instant the server was started
+// StartTime is instant the server was started
 var StartTime time.Time = time.Now()
 
 // Functions
-/////////////////////////////////////////////////////////////////////////////////////////////
+// -------------------------------------------------------------------------------------------
 
 // Get the port from environment variable $PORT, or use default if the variable is not set
 func port() int {
@@ -38,7 +39,10 @@ func port() int {
 func serve(r *chi.Mux) {
 	port := port()
 	addr := fmt.Sprintf(":%d", port)
-	http.ListenAndServe(addr, r)
+	err := http.ListenAndServe(addr, r)
+	if err != nil {
+		log.Fatalf("Error while serving http: %s", err.Error())
+	}
 }
 
 // Setup all the top level routes the server serves on
