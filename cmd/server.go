@@ -51,6 +51,7 @@ func setupRoutes() *chi.Mux {
 	// Define endpoints
 	r.Get(corona.DiagRootPath, corona.NewDiagHandler(0, StartTime))
 	r.Get(corona.CountryRootPath+"/{country:[a-zA-Z]+}", corona.CountryHandler)
+	r.Get(corona.PolicyRootPath+"/{country:[a-zA-Z]+}", corona.PolicyHandler)
 
 	return r
 }
