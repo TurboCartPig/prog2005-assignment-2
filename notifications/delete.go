@@ -1,8 +1,11 @@
 package notifications
 
-import "net/http"
+import (
+	"cloud.google.com/go/firestore"
+	"net/http"
+)
 
-func NewDeleteHandler() http.HandlerFunc {
+func NewDeleteHandler(fs *firestore.Client) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, http.StatusText(http.StatusNotImplemented), http.StatusNotImplemented)
 	}

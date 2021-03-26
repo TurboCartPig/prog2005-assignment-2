@@ -15,6 +15,13 @@ The server is accessible using the following url: http://10.212.142.242:3000
 
 I chose a slightly different setup then what was shown in the lectures. I went with a fedora based instance, simply because I am much more familiar with fedora than with ubuntu or debian.
 
+### Firebase authentication
+
+In order to deploy this project, you need to generate a service account key and point the environment variable GOOGLE_APPLICATION_CREDENTIALS to it.
+The server then picks up on the environment variable, and uses the key to authenticate against Firebase.
+
+I recommend setting up a `.env` file for all your environment variables when developing on projects like this.
+
 ### Run as a systemd service
 
 The server is currently deployed on skyhigh / openstack as a systemd service in user mode. This is achieved using the service unit included under `systemd`.

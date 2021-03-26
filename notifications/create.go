@@ -2,7 +2,9 @@ package notifications
 
 import (
 	"assignment-2/corona"
+	"cloud.google.com/go/firestore"
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -20,7 +22,7 @@ type responseBody struct {
 	ID string `json:"id"`
 }
 
-func NewCreateHandler() http.HandlerFunc {
+func NewCreateHandler(fs *firestore.Client) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		// Validation:
 		// - Send OPTIONS request to provided url and check if is exists and accepts POST requests
@@ -40,6 +42,7 @@ func NewCreateHandler() http.HandlerFunc {
 		// 2. That the url accepts POST requests.
 		status := corona.GetStatusOf(body.URL)
 		if !corona.StatusIs2XX(status) {
+			log.Println("Status of", body.URL, status)
 			http.Error(rw, "There is something wrong with the url field", http.StatusBadRequest)
 			return
 		}
@@ -57,7 +60,15 @@ func NewCreateHandler() http.HandlerFunc {
 		}
 
 		// Now actually create / register the webhook
+		docref, _, err := fs.Collection("webhooks").Add(r.Context(), body)
+		if err != nil {
+			log.Println("Failed to add to firestore collection", err)
+			http.Error(rw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
 
-		http.Error(rw, http.StatusText(http.StatusNotImplemented), http.StatusNotImplemented)
+		response := responseBody{docref.ID}
+		_ = json.NewEncoder(rw).Encode(response)
+		rw.WriteHeader(http.StatusCreated)
 	}
 }

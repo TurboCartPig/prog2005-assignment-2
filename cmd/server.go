@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cloud.google.com/go/firestore"
 	"fmt"
 	"net/http"
 	"os"
@@ -41,7 +42,7 @@ func serve(r *chi.Mux) {
 }
 
 // Setup all the top level routes the server serves on
-func setupRoutes() *chi.Mux {
+func setupRoutes(fs *firestore.Client) *chi.Mux {
 	r := chi.NewRouter()
 
 	// Use middleware
@@ -56,16 +57,18 @@ func setupRoutes() *chi.Mux {
 
 	// Define webhook endpoints in a subroute
 	r.Route(notifications.RootPath, func(r chi.Router) {
-		r.Post("/", notifications.NewCreateHandler())
-		r.Get("/", notifications.NewReadAllHandler())
-		r.Delete(notifications.IdPattern, notifications.NewDeleteHandler())
-		r.Get(notifications.IdPattern, notifications.NewReadHandler())
+		r.Post("/", notifications.NewCreateHandler(fs))
+		r.Get("/", notifications.NewReadAllHandler(fs))
+		r.Delete(notifications.IdPattern, notifications.NewDeleteHandler(fs))
+		r.Get(notifications.IdPattern, notifications.NewReadHandler(fs))
 	})
 
 	return r
 }
 
 func main() {
-	r := setupRoutes()
+	// Initialize a firestore client
+	fs := notifications.NewFirestoreClient()
+	r := setupRoutes(fs)
 	serve(r)
 }
