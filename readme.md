@@ -35,6 +35,8 @@ sudo systemctl daemon-reload
 systemctl --user enable --now server.service
 # Check the status of the server
 systemctl --user status server.service
+# Follow the logs from the server as they are written
+journalctl --user-unit=server.service --follow
 ```
 
 ## Third party
