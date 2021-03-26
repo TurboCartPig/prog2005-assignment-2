@@ -5,8 +5,10 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/assignment-2
-Environment=PORT=443 GOOGLE_APPLICATION_CREDENTIALS=???
+User=fedora
+Group=fedora
+ExecStart=/home/fedora/server
+Environment=PORT=3000 GOOGLE_APPLICATION_CREDENTIALS=""
 Restart=on-failure
 RestartSec=3s
 
