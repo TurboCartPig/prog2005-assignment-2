@@ -54,6 +54,29 @@ func getStringency(code, date string) (response covidTrackerAPIResponse, err *Se
 	return
 }
 
+// GetLatestStringency returns the latest available stringency information for a given country.
+func GetLatestStringency(country string) (response PolicyResponse, err *ServerError) {
+	// Get the alpha3code for the country
+	code, err := GetCountryCode(country)
+	if err != nil {
+		return
+	}
+
+	// Get the latest stringency info
+	res, err := getStringency(code, TimeAsString(time.Now().AddDate(0, 0, -2)))
+	if err != nil {
+		return
+	}
+
+	// Fill out response data
+	response.Country = country
+	response.Scope = "total"
+	response.Stringency = res.Data.Stringency
+	response.Trend = 0
+
+	return response, nil
+}
+
 func PolicyHandler(rw http.ResponseWriter, r *http.Request) {
 	var response PolicyResponse
 	var scoped bool
@@ -71,14 +94,14 @@ func PolicyHandler(rw http.ResponseWriter, r *http.Request) {
 		scoped = true
 	}
 
-	alpha3code, serverErr := GetCountryCode(country)
-	if serverErr != nil {
-		http.Error(rw, serverErr.Error(), serverErr.StatusCode)
-		return
-	}
-
 	// If scope query was passed, fetch data for all the dates in range
 	if scoped {
+		alpha3code, serverErr := GetCountryCode(country)
+		if serverErr != nil {
+			http.Error(rw, serverErr.Error(), serverErr.StatusCode)
+			return
+		}
+
 		// Fetch stringency info for the two dates
 		upperRes, serverErr := getStringency(alpha3code, TimeAsString(*upper))
 		if serverErr != nil {
@@ -101,17 +124,12 @@ func PolicyHandler(rw http.ResponseWriter, r *http.Request) {
 		// Trend is difference in stringency from first date to last data in scope
 		response.Trend = lowerRes.Data.Stringency - upperRes.Data.Stringency
 	} else { // Fetch data for latest available date
-		res, serverErr := getStringency(alpha3code, TimeAsString(time.Now().AddDate(0, 0, -2)))
+		var serverErr *ServerError // Avoid shadowing
+		response, serverErr = GetLatestStringency(country)
 		if serverErr != nil {
 			http.Error(rw, serverErr.Error(), serverErr.StatusCode)
 			return
 		}
-
-		// Fill out response data
-		response.Country = country
-		response.Scope = "total"
-		response.Stringency = res.Data.Stringency
-		response.Trend = 0
 	}
 
 	err = json.NewEncoder(rw).Encode(response)

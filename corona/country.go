@@ -83,8 +83,24 @@ func getCases(country string) (confirmed, recovered caseHistory, err *ServerErro
 	return confirmed, recovered, err
 }
 
+func GetLatestCases(country string) (CountryResponse, *ServerError) {
+	var response CountryResponse
+
+	confirmed, recovered, err := getCases(country)
+	if err != nil {
+		return response, err
+	}
+
+	response.Country = confirmed.Country
+	response.Continent = confirmed.Continent
+	response.Scope = "total"
+	response.Confirmed = confirmed.latestCount()
+	response.Recovered = recovered.latestCount()
+
+	return response, nil
+}
+
 // CountryHandler is the handler for the country endpoint.
-// TODO: Handle no scope query
 func CountryHandler(rw http.ResponseWriter, r *http.Request) {
 	var response CountryResponse
 	var scoped bool
