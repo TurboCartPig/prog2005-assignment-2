@@ -29,12 +29,12 @@ type covidTrackerAPIStringencyData struct {
 }
 
 // covidTrackerApiResponse is the response from http requests to the CovidTrackerApi.
-type covidTrackerApiResponse struct {
+type covidTrackerAPIResponse struct {
 	Data covidTrackerAPIStringencyData `json:"stringencyData"`
 }
 
 // getStringency for a given country's alpha3 code at a given date.
-func getStringency(code string, date string) (response covidTrackerApiResponse, err *ServerError) {
+func getStringency(code, date string) (response covidTrackerAPIResponse, err *ServerError) {
 	res, geterr := http.Get(CovidTrackerAPIRootPath + "/stringency/actions/" + code + "/" + date)
 	if geterr != nil {
 		err = &ServerError{"Failed to get cases for country", res.StatusCode}

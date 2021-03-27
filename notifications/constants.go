@@ -9,7 +9,7 @@ const (
 	RootPath string = corona.RootPath + "/notifications"
 
 	// IdPattern is the path of any endpoint that takes one id parameter and otherwise is defined by it's http method.
-	IdPattern string = "/{id:[a-zA-Z]+}"
+	IDPattern string = "/{id:[a-zA-Z]+}"
 )
 
 // Triggers that a webhook waits for.

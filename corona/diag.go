@@ -30,6 +30,6 @@ func NewDiagHandler(registered int, startTime time.Time) http.HandlerFunc {
 			uptime,
 		}
 
-		json.NewEncoder(rw).Encode(response)
+		_ = json.NewEncoder(rw).Encode(response)
 	}
 }

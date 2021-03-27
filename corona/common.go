@@ -43,6 +43,7 @@ func LatestDateInDateFloatMap(m map[string]float64) string {
 }
 
 // ParseScope query into two dates, or an error.
+//nolint:gocritic // Named returns is just inconvenient here
 func ParseScope(qs *url.URL) (*time.Time, *time.Time, error) {
 	scope := qs.Query().Get("scope")
 
@@ -54,7 +55,7 @@ func ParseScope(qs *url.URL) (*time.Time, *time.Time, error) {
 	parts := strings.Split(scope, "-")
 
 	// Check if all the parts are present
-	if len(parts) != 6 {
+	if len(parts) != 6 { //nolint:gomnd // The scope string has 6 parts or it's invalid
 		err := errors.New("incorrect date format in scope query")
 		return nil, nil, err
 	}

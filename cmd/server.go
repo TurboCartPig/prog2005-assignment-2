@@ -23,6 +23,9 @@ import (
 // StartTime is instant the server was started
 var StartTime time.Time = time.Now()
 
+// DefaultPort is the default port number if no other port number is specified via the $PORT environment variable
+const DefaultPort int = 3000
+
 // Functions
 // -------------------------------------------------------------------------------------------
 
@@ -32,7 +35,7 @@ func port() int {
 		port, _ := strconv.Atoi(port)
 		return port
 	}
-	return 3000
+	return DefaultPort
 }
 
 // Serve the resources as defined by routes in `r`
@@ -63,8 +66,8 @@ func setupRoutes(fs *firestore.Client) *chi.Mux {
 	r.Route(notifications.RootPath, func(r chi.Router) {
 		r.Post("/", notifications.NewCreateHandler(fs))
 		r.Get("/", notifications.NewReadAllHandler(fs))
-		r.Delete(notifications.IdPattern, notifications.NewDeleteHandler(fs))
-		r.Get(notifications.IdPattern, notifications.NewReadHandler(fs))
+		r.Delete(notifications.IDPattern, notifications.NewDeleteHandler(fs))
+		r.Get(notifications.IDPattern, notifications.NewReadHandler(fs))
 	})
 
 	return r

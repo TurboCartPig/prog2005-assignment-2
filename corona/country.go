@@ -80,7 +80,7 @@ func getCases(country string) (confirmed, recovered caseHistory, err *ServerErro
 
 	recovered = cases["All"]
 
-	return
+	return confirmed, recovered, err
 }
 
 // CountryHandler is the handler for the country endpoint.
@@ -121,7 +121,10 @@ func CountryHandler(rw http.ResponseWriter, r *http.Request) {
 		response.Recovered = recovered.latestCount()
 	}
 
-	response.PopulationPercentage = math.Round(response.Confirmed/confirmed.Population*100) / 100
+	//nolint:gomnd // We want 2 digits of precision, hence 100
+	response.PopulationPercentage = math.Round(
+		response.Confirmed/confirmed.Population*100,
+	) / 100
 
 	err = json.NewEncoder(rw).Encode(response)
 	if err != nil {
