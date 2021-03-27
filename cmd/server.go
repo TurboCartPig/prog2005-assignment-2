@@ -78,4 +78,6 @@ func main() {
 	fs := notifications.NewFirestoreClient()
 	r := setupRoutes(fs)
 	serve(r)
+
+	_ = fs.Close()
 }
