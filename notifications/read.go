@@ -26,7 +26,7 @@ func NewReadHandler(fs *firestore.Client) http.HandlerFunc {
 			return
 		}
 
-		var data requestBody
+		var data Webhook
 		err = docsnap.DataTo(&data)
 		if err != nil {
 			log.Println(err.Error())
@@ -52,7 +52,7 @@ func NewReadAllHandler(fs *firestore.Client) http.HandlerFunc {
 		// For all the docrefs, get their document snapshot,
 		// and read the data into a struct, then append that struct to `body`
 		// NOTE: There might be docrefs for which there is no document, therefore we can not preallocate the body slice.
-		body := make([]requestBody, 0)
+		body := make([]Webhook, 0)
 		for _, docref := range docrefs {
 			docsnap, err := docref.Get(r.Context())
 			if status.Code(err) == codes.NotFound {
@@ -64,7 +64,7 @@ func NewReadAllHandler(fs *firestore.Client) http.HandlerFunc {
 				return
 			}
 
-			var data requestBody
+			var data Webhook
 			err = docsnap.DataTo(&data)
 			if err != nil {
 				log.Println(err.Error())

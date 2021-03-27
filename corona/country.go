@@ -10,8 +10,8 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// countryResponse is the response object from the country endpoint.
-type countryResponse struct {
+// CountryResponse is the response object from the country endpoint.
+type CountryResponse struct {
 	Country              string  `json:"country"`
 	Continent            string  `json:"continent"`
 	Scope                string  `json:"scope"`
@@ -86,7 +86,7 @@ func getCases(country string) (confirmed, recovered caseHistory, err *ServerErro
 // CountryHandler is the handler for the country endpoint.
 // TODO: Handle no scope query
 func CountryHandler(rw http.ResponseWriter, r *http.Request) {
-	var response countryResponse
+	var response CountryResponse
 	var scoped bool
 
 	country := chi.URLParam(r, "country")

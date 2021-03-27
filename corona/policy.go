@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-type policyResponse struct {
+type PolicyResponse struct {
 	Country    string  `json:"country"`
 	Scope      string  `json:"scope"`
 	Stringency float64 `json:"stringency"`
@@ -55,7 +55,7 @@ func getStringency(code, date string) (response covidTrackerAPIResponse, err *Se
 }
 
 func PolicyHandler(rw http.ResponseWriter, r *http.Request) {
-	var response policyResponse
+	var response PolicyResponse
 	var scoped bool
 
 	country := chi.URLParam(r, "country")

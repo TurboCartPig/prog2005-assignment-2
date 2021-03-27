@@ -8,15 +8,6 @@ import (
 	"net/http"
 )
 
-// requestBody is the body of the incoming request to be parsed and registered.
-type requestBody struct {
-	URL     string `json:"url"`
-	Timeout int    `json:"timeout"`
-	Field   string `json:"field"`
-	Country string `json:"country"`
-	Trigger string `json:"trigger"`
-}
-
 // responseBody is the body of the response sent back from the webhook creation endpoint.
 type responseBody struct {
 	ID string `json:"id"`
@@ -30,7 +21,7 @@ func NewCreateHandler(fs *firestore.Client) http.HandlerFunc {
 		// - Check the trigger is one of the enumerated options
 
 		// Decode the request body into a struct
-		var body requestBody
+		var body Webhook
 		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
 			http.Error(rw, "Failed to parse request body", http.StatusBadRequest)
