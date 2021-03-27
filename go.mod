@@ -7,4 +7,5 @@ require (
 	firebase.google.com/go/v4 v4.3.0
 	github.com/go-chi/chi v1.5.4
 	github.com/stretchr/testify v1.7.0
+	google.golang.org/grpc v1.29.1
 )
