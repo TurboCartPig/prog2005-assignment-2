@@ -5,10 +5,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=fedora
-Group=fedora
 ExecStart=/home/fedora/server
-Environment=PORT=3000 GOOGLE_APPLICATION_CREDENTIALS=""
+Environment=PORT=3000 GOOGLE_APPLICATION_CREDENTIALS="/home/fedora/service-account-key.json"
 Restart=on-failure
 RestartSec=3s
 
