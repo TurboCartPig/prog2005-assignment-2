@@ -60,7 +60,7 @@ func NewCreateHandler(fs *firestore.Client) http.HandlerFunc {
 		}
 
 		// Now actually create / register the webhook
-		docref, _, err := fs.Collection("webhooks").Add(r.Context(), body)
+		docref, _, err := fs.Collection(WebhookCollection).Add(r.Context(), body)
 		if err != nil {
 			log.Println("Failed to add to firestore collection", err)
 			http.Error(rw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
