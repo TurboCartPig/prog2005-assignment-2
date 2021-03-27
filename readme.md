@@ -9,6 +9,23 @@
 3. /corona/v1/diag/
 4. /corona/v1/notifications/
 
+## Development
+
+This project targets Go 1.15 and 1.16 and I will assume `$GO111MODULE` is set to `on` (or empty if you are running GO 1.16 or newer).
+
+The project uses two frameworks for code consistency and quality.
+The first is golangci-lint which I will assume any Go programmer is familiar with.
+The other is pre-commit; which is a python based git hook framework for running stuff (golangci-lint in this case) everytime you commit.
+These can be installed via the following commands:
+```bash
+# Install golangci-lint
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.37.1
+# Install pre-commit (also available from traditional package managers)
+pip install pre-commit
+# Install pre-commit hooks
+pre-commit install --install-hooks
+```
+
 ## Deployment
 
 The server is accessible using the following url: http://10.212.142.242:3000
