@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"assignment-2/corona"
@@ -39,13 +40,15 @@ func port() int {
 }
 
 // Serve the resources as defined by routes in `r`
-func serve(r *chi.Mux) {
+func serve(r *chi.Mux, wg *sync.WaitGroup) {
 	port := port()
 	addr := fmt.Sprintf(":%d", port)
 	err := http.ListenAndServe(addr, r)
 	if err != nil {
 		log.Fatalf("Error while serving http: %s", err.Error())
 	}
+
+	wg.Done()
 }
 
 // Setup all the top level routes the server serves on
@@ -76,8 +79,14 @@ func setupRoutes(fs *firestore.Client) *chi.Mux {
 func main() {
 	// Initialize a firestore client
 	fs := notifications.NewFirestoreClient()
-	r := setupRoutes(fs)
-	serve(r)
+	defer fs.Close()
 
-	_ = fs.Close()
+	wg := &sync.WaitGroup{}
+	wg.Add(2) //nolint:gomnd // How many goroutines we are about to launch
+
+	r := setupRoutes(fs)
+	go serve(r, wg)
+	go notifications.InvokeLoop(fs, wg)
+
+	wg.Wait()
 }
