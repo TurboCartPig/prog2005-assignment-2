@@ -14,7 +14,7 @@ type responseBody struct {
 	ID string `json:"id"`
 }
 
-func NewCreateHandler(fs *firestore.Client) http.HandlerFunc {
+func NewCreateHandler(fs *firestore.Client, registerChan chan<- string) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		// Validation:
 		// - Send OPTIONS request to provided url and check if is exists and accepts POST requests
@@ -61,6 +61,9 @@ func NewCreateHandler(fs *firestore.Client) http.HandlerFunc {
 			http.Error(rw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
+
+		// Notify the invocation loop that a new webhook has been registered
+		registerChan <- "register"
 
 		response := responseBody{docref.ID}
 		_ = json.NewEncoder(rw).Encode(response)

@@ -52,7 +52,7 @@ func serve(r *chi.Mux, wg *sync.WaitGroup) {
 }
 
 // Setup all the top level routes the server serves on
-func setupRoutes(fs *firestore.Client) *chi.Mux {
+func setupRoutes(fs *firestore.Client, registerChan chan<- string) *chi.Mux {
 	r := chi.NewRouter()
 
 	// Use middleware
@@ -67,7 +67,7 @@ func setupRoutes(fs *firestore.Client) *chi.Mux {
 
 	// Define webhook endpoints in a subroute
 	r.Route(notifications.RootPath, func(r chi.Router) {
-		r.Post("/", notifications.NewCreateHandler(fs))
+		r.Post("/", notifications.NewCreateHandler(fs, registerChan))
 		r.Get("/", notifications.NewReadAllHandler(fs))
 		r.Delete(notifications.IDPattern, notifications.NewDeleteHandler(fs))
 		r.Get(notifications.IDPattern, notifications.NewReadHandler(fs))
@@ -81,12 +81,14 @@ func main() {
 	fs := notifications.NewFirestoreClient()
 	defer fs.Close()
 
+	registerChan := make(chan string)
+
 	wg := &sync.WaitGroup{}
 	wg.Add(2) //nolint:gomnd // How many goroutines we are about to launch
 
-	r := setupRoutes(fs)
+	r := setupRoutes(fs, registerChan)
 	go serve(r, wg)
-	go notifications.InvokeLoop(fs, wg)
+	go notifications.InvokeLoop(fs, registerChan, wg)
 
 	wg.Wait()
 }

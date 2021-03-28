@@ -180,7 +180,9 @@ func InvokeAllWithField(fs *firestore.Client, field, id string) error {
 }
 
 // Loop over webhooks and invoke them if the should be invoked.
-func InvokeLoop(fs *firestore.Client, wg *sync.WaitGroup) {
+func InvokeLoop(fs *firestore.Client, registerChan <-chan string, wg *sync.WaitGroup) {
+	timeoutChan := make(chan string)
+
 	for {
 		next, id, webhook, err := GetNextTimeout(fs)
 		if err != nil {
@@ -204,7 +206,20 @@ func InvokeLoop(fs *firestore.Client, wg *sync.WaitGroup) {
 		}
 
 		// Sleep until next timeout
-		time.Sleep(time.Until(next))
+		go func() {
+			time.Sleep(time.Until(next))
+			timeoutChan <- "timeout"
+		}()
+
+		// Either we sleep until the next timeout expires,
+		// or we run all the logic again if a new webhook gets registered
+		select {
+		case <-timeoutChan:
+			log.Println("Timeout reached, invoking webhook:", id)
+		case <-registerChan:
+			log.Println("New webhook registered")
+			continue
+		}
 
 		// Now invoke the webhook, since it has timed out by now
 		changed, field, err := webhook.Invoke(fs, id)
