@@ -32,30 +32,38 @@ type Webhook struct {
 
 // Invoke a webhook by figuring out what it's looking for and getting it.
 // Returns if the invocation resulted in new data.
-func (w *Webhook) Invoke(fs *firestore.Client, id string) (bool, string, error) {
+func (w *Webhook) Invoke(fs *firestore.Client, id string, useCache bool) (bool, string, error) {
 	var body interface{}
 	changed := false
 
 	// Get whatever info the webhook is interested in
-	if w.Field == FieldConfirmed {
-		confirmed, err := corona.GetLatestCases(w.Country)
-		if err != nil {
-			return false, "", err
+	if useCache {
+		if w.Field == FieldConfirmed {
+			body = &LastConfirmed
+		} else { // w.Field == FieldStringency
+			body = &LastStringency
 		}
-		body = &confirmed
-		if confirmed != LastConfirmed {
-			changed = true
-			LastConfirmed = confirmed
-		}
-	} else { // w.Field == FieldStringency
-		stringency, err := corona.GetLatestStringency(w.Country)
-		if err != nil {
-			return false, "", err
-		}
-		body = &stringency
-		if stringency != LastStringency {
-			changed = true
-			LastStringency = stringency
+	} else {
+		if w.Field == FieldConfirmed {
+			confirmed, err := corona.GetLatestCases(w.Country)
+			if err != nil {
+				return false, "", err
+			}
+			body = &confirmed
+			if confirmed != LastConfirmed {
+				changed = true
+				LastConfirmed = confirmed
+			}
+		} else { // w.Field == FieldStringency
+			stringency, err := corona.GetLatestStringency(w.Country)
+			if err != nil {
+				return false, "", err
+			}
+			body = &stringency
+			if stringency != LastStringency {
+				changed = true
+				LastStringency = stringency
+			}
 		}
 	}
 
@@ -170,7 +178,7 @@ func InvokeAllWithField(fs *firestore.Client, field, id string) error {
 		}
 
 		// Invoke the webhook, we can ignore any changes that results from this
-		_, _, err = webhook.Invoke(fs, docref.ID)
+		_, _, err = webhook.Invoke(fs, docref.ID, true)
 		if err != nil {
 			return err
 		}
@@ -192,7 +200,7 @@ func InvokeLoop(fs *firestore.Client, registerChan <-chan string, wg *sync.WaitG
 
 		// Has the timeout already expired?
 		if next.Before(time.Now()) {
-			changed, field, err := webhook.Invoke(fs, id)
+			changed, field, err := webhook.Invoke(fs, id, false)
 			if err != nil {
 				log.Println(err.Error())
 			}
@@ -222,7 +230,7 @@ func InvokeLoop(fs *firestore.Client, registerChan <-chan string, wg *sync.WaitG
 		}
 
 		// Now invoke the webhook, since it has timed out by now
-		changed, field, err := webhook.Invoke(fs, id)
+		changed, field, err := webhook.Invoke(fs, id, false)
 		if err != nil {
 			log.Println(err.Error())
 		}
