@@ -1,10 +1,11 @@
-# Created by https://www.toptal.com/developers/gitignore/api/jetbrains+all,go,vim
-# Edit at https://www.toptal.com/developers/gitignore?templates=jetbrains+all,go,vim
-
 ### Firebase ###
 service-account-key.json
 
 ### Go ###
+
+# Server executable on unix
+server
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -134,5 +135,3 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
-
-# End of https://www.toptal.com/developers/gitignore/api/jetbrains+all,go,vim
