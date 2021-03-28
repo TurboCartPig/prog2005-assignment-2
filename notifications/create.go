@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 )
 
 // responseBody is the body of the response sent back from the webhook creation endpoint.
@@ -49,6 +50,9 @@ func NewCreateHandler(fs *firestore.Client) http.HandlerFunc {
 			http.Error(rw, "The trigger supplied does not exits", http.StatusBadRequest)
 			return
 		}
+
+		// Keep track of when to time the webhook out
+		body.LastTriggered = time.Now()
 
 		// Now actually create / register the webhook
 		docref, _, err := fs.Collection(WebhookCollection).Add(r.Context(), body)
