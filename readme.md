@@ -9,6 +9,12 @@
 3. /corona/v1/diag/
 4. /corona/v1/notifications/
 
+## Webhooks
+
+I choose to interpret the spec in a way that made sense to me, not necessarily the way it was intended or interpreted by anyone else.
+The way I handle ON_CHANGED is probably where this shows the most. I made it so that only if a timeout is reached, does the server check if the data is changed, and potentially trigger a ON_CHANGED event. ON_CHANGED can not be triggered any other way, not if someone uses the other endpoints, and not if the data changed, but no webhooks has fetched it yet.
+I feel like the spec is vague enough to the point that this should be acceptable.
+
 ## Development
 
 This project targets Go 1.15 and 1.16 and I will assume `$GO111MODULE` is set to `on` (or empty if you are running GO 1.16 or newer).
