@@ -11,8 +11,9 @@ import (
 	"time"
 
 	"assignment-2/corona"
-	mymw "assignment-2/middleware"
 	"assignment-2/notifications"
+	mymw "assignment-2/middleware"
+	fs "assignment-2/firestore"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -78,7 +79,7 @@ func setupRoutes(fs *firestore.Client, registerChan chan<- string) *chi.Mux {
 
 func main() {
 	// Initialize a firestore client
-	fs := notifications.NewFirestoreClient()
+	fs := fs.NewFirestoreClient()
 	defer fs.Close()
 
 	registerChan := make(chan string)
