@@ -38,6 +38,8 @@ The server is accessible using the following url: http://10.212.142.242:3000
 
 I chose a slightly different setup then what was shown in the lectures. I went with a fedora based instance, simply because I am much more familiar with fedora than with ubuntu or debian.
 
+ALSO: if the server is down, just ping me, and I'll get it back up. The server seems to just die if it remains idle for too long.
+
 ### Firebase authentication
 
 In order to deploy this project, you need to generate a service account key and point the environment variable GOOGLE_APPLICATION_CREDENTIALS to it.
@@ -68,6 +70,16 @@ systemctl --user status server.service
 # Follow the logs from the server as they are written
 journalctl --user-unit=server.service --follow
 ```
+
+## Remarks on the assignment
+
+> Warning: May contain rants
+> 
+> Correction: Exclusively contains rants
+
+CovidTracker is made by monkeys, the documentation alone contains more errors than I care to count.
+
+Go's type-system sucks. Who makes a language with no generics support in the 21th century?
 
 ## Third party
 
