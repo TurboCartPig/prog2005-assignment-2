@@ -61,7 +61,7 @@ func setupRoutes(fs *firestore.Client, registerChan chan<- string) *chi.Mux {
 	r.Use(mymw.ReturnJSON)
 
 	// Define endpoints
-	r.Get(corona.DiagRootPath, corona.NewDiagHandler(0, StartTime))
+	r.Get(corona.DiagRootPath, corona.NewDiagHandler(fs, StartTime))
 	r.Get(corona.CountryRootPath+"/{country:[a-zA-Z]+}", corona.CountryHandler)
 	r.Get(corona.PolicyRootPath+"/{country:[a-zA-Z]+}", corona.PolicyHandler)
 
